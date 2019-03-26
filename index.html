@@ -1,0 +1,113 @@
+<html>
+<head>
+<style>
+    .selected {
+        background-color: red;
+    }
+</style>
+</head>
+
+    <h1>Welcome to our webshop</h1>
+
+    <div id="products"></div>
+
+    <h2>You have the following items in your shopping cart</h2>
+    <div id="shoppingCart"></div>
+
+<script>
+
+const products = [
+    {
+        name: "Apple",
+        description: "One a day keeps the doctor away",
+        price: 26.90
+    },
+    {
+        name: "Bananas",
+        description: "it's not the <em>peel</em> you slip on, but the banana",
+        price: 9.00
+    },
+    {
+        name: "Carrots",
+        description: "Healthy and sweet",
+        price: 22.00
+    }
+];
+
+
+const shoppingCart = [
+
+];
+
+function createElementWithText(tagName, text) {
+    const element = document.createElement(tagName);
+    element.innerHTML = text;
+    return element;
+}
+
+
+const productsElement = document.getElementById("products");
+
+function renderProduct(id) {
+    const product = products[id];
+    
+    const productDiv = document.createElement("div");
+
+    const { name, description } = product;
+
+    productDiv.appendChild(createElementWithText("h2", name));
+    productDiv.appendChild(createElementWithText("div", description));
+
+    const addToCartButton = createElementWithText("button", "Add to shopping cart");
+    addToCartButton.dataset.productId = id;
+    productDiv.appendChild(addToCartButton);
+    
+    return productDiv;
+}
+
+
+for (const id in products) {
+    productsElement.appendChild(renderProduct(id));
+}
+
+function renderShoppingCart() {
+    const shoppingCartElement = document.getElementById("shoppingCart");
+    shoppingCartElement.innerHTML = "";
+    let total = 0;
+    for (const item of shoppingCart) {
+        const product = products[item.productId];
+
+        const linePrice = item.quantity * product.price;
+        shoppingCartElement.appendChild(createElementWithText("div", 
+            item.quantity + " x <em>" + product.name + "</em> = " + 
+            Number(linePrice).toFixed(2)
+        ));
+        total += linePrice;
+    }
+
+    shoppingCartElement.appendChild(createElementWithText("h4",
+        "Total: " + Number(total).toFixed(2)));
+}
+
+productsElement.addEventListener("click", e => {
+    if (e.target.tagName === "BUTTON") {
+        const { productId } = e.target.dataset;
+
+        e.target.classList.add("selected");
+
+        const shoppingCartItem = shoppingCart.find(item => item.productId == productId);
+        if (shoppingCartItem) {
+            shoppingCartItem.quantity++;
+        } else {
+            shoppingCart.push({ productId, quantity: 1 });
+        }
+
+        renderShoppingCart();
+    }
+});
+
+
+
+</script>
+
+</html>
